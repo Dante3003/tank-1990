@@ -40,6 +40,13 @@ export default class Tank extends Phaser.Physics.Matter.Sprite {
         Phaser.Input.Keyboard.KeyCodes.SPACE
       ),
     };
+
+    // this.scene.matterCollision.addOnCollideStart({
+    //   objectA: this,
+    //   callback: ({ gameObjectB }) => {
+    //     console.log("worked");
+    //   },
+    // });
   }
   protected preUpdate(): void {
     if (this.inputs.right.isDown) {
@@ -57,7 +64,6 @@ export default class Tank extends Phaser.Physics.Matter.Sprite {
     }
 
     if (this.inputs.fire.isDown) {
-      console.log(this.angle);
       if (this.bullet?.active) {
         return;
       }
@@ -72,6 +78,8 @@ export default class Tank extends Phaser.Physics.Matter.Sprite {
         this.angle - 90
       );
       this.scene.add.existing(this.bullet);
+
+      // this.bulletGroup.get();
     }
   }
 }

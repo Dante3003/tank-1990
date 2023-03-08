@@ -29,6 +29,7 @@ export class Bullet extends Phaser.Physics.Matter.Sprite {
     this.scene.matterCollision.addOnCollideActive({
       objectA: this,
       callback: ({ bodyA }) => {
+        // @ts-ignore
         bodyA?.gameObject?.destroy();
       },
     });

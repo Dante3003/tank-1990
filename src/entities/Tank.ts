@@ -27,8 +27,8 @@ export default class Tank extends Phaser.Physics.Matter.Sprite {
     this.speed = 0.8;
 
     // TODO: remove this lines
-    this.setDisplaySize(50, 50);
-    this.setSize(50, 50);
+    this.setDisplaySize(32, 32);
+    this.setSize(32, 32);
     // this.rotation = -Math.PI / 2;
 
     this.inputs = {

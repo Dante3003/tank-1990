@@ -1,4 +1,5 @@
 import { Bullet } from "../entities/Bullet";
+import Enemy from "../entities/Enemy";
 import Tank from "../entities/Tank";
 import { Scene } from "phaser";
 
@@ -18,6 +19,7 @@ export class GameScene extends Scene {
   create() {
     this.matter.world.setBounds();
     const player = new Tank(this, this.matter.world, 100, 100);
+    const enemy = new Enemy(this, this.matter.world, 250, 250);
 
     const map = this.make.tilemap({ key: "demoMap" });
     const tileset = map.addTilesetImage("demo", "demoTextures");
@@ -29,15 +31,19 @@ export class GameScene extends Scene {
     this.walls.forEachTile((tile) => {
       this.matterCollision.addOnCollideStart({
         objectA: tile,
-        callback: ({ bodyB, bodyA }) => {
+        callback: ({ bodyB, bodyA, gameObjectA }) => {
           console.log(bodyA);
           if (
+            // @ts-ignore
             bodyB.label === "bullet" &&
+            // @ts-ignore
             bodyA?.gameObject?.tile?.properties?.destroyable
           ) {
+            // @ts-ignore
             this.walls.removeTileAtWorldXY(bodyA.position.x, bodyA.position.y);
-            bodyA?.gameObject?.tile?.destroy();
+            // @ts-ignore
             bodyA?.gameObject?.destroy();
+            // @ts-ignore
             bodyB?.gameObject?.destroy();
           }
         },

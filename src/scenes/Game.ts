@@ -43,7 +43,8 @@ export class GameScene extends Scene {
     this.scene.launch("GameUI");
     this.matter.world.setBounds();
 
-    const player = new Tank(this, this.matter.world, 100, 100);
+    // player
+    new Tank(this, this.matter.world, 100, 100);
     const base = this.matter.add.sprite(
       230,
       500,

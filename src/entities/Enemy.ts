@@ -1,8 +1,8 @@
+import gameEvents from "../events/game";
 import { GameScene } from "../scenes/Game";
 import { randomInRange } from "../utils/random";
 import { Bullet } from "./Bullet";
-
-const directions = {};
+import Explosion from "./Explosion";
 
 export default class Enemy extends Phaser.Physics.Matter.Sprite {
   bullet!: Bullet;
@@ -17,7 +17,7 @@ export default class Enemy extends Phaser.Physics.Matter.Sprite {
     x: number,
     y: number
   ) {
-    super(world, x, y, "tank", "tankBody_red_outline");
+    super(world, x, y, "mainSpritesheet", "tank-yellow-1.png");
     this.scene = scene;
     this.scene.add.existing(this);
 
@@ -30,20 +30,35 @@ export default class Enemy extends Phaser.Physics.Matter.Sprite {
     }, 1500);
     this.fireInterval = setInterval(() => {
       this.fire();
-    }, 1000 * randomInRange(0.5, 1.5));
+    }, 1000 * randomInRange(1.2, 3.5));
 
     this.scene.matterCollision.addOnCollideStart({
       objectA: this,
-      callback: ({ bodyB }) => {
+      callback: ({ bodyB, gameObjectB }) => {
         // @ts-ignore
-        if (bodyB.label === "bullet") {
+        if (bodyB.label === "bullet" && gameObjectB?.owner !== "enemy") {
+          const explosion = new Explosion(
+            scene,
+            // @ts-ignore
+            this.x,
+            // @ts-ignore
+            this.y,
+            2
+          );
+          scene.add.existing(explosion);
+          // @ts-ignore
+          bodyB?.gameObject?.destroy();
           this.die();
         }
       },
     });
+
+    this.once("destroy", () => {
+      clearInterval(this.moveInterval);
+      clearInterval(this.fireInterval);
+    });
   }
   protected preUpdate(): void {
-    console.log(this.direction);
     if (this.direction === 1) {
       this.x += this.speed;
       this.angle = 0;
@@ -71,12 +86,14 @@ export default class Enemy extends Phaser.Physics.Matter.Sprite {
         this.scene.matter.world,
         this.x + fireOffset.x,
         this.y + fireOffset.y,
-        this.angle - 90
+        this.angle - 90,
+        "enemy"
       );
       this.scene.add.existing(this.bullet);
     }
   }
   die() {
+    gameEvents.emit("updateScore", 500);
     clearInterval(this.moveInterval);
     clearInterval(this.fireInterval);
     this.destroy();

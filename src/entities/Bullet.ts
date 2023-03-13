@@ -1,22 +1,26 @@
 import { GameScene } from "../scenes/Game";
+import Explosion from "./Explosion";
 
 export class Bullet extends Phaser.Physics.Matter.Sprite {
   speed: number;
   timeout!: number;
+  owner: string;
   constructor(
     scene: GameScene,
     world: Phaser.Physics.Matter.World,
     x: number,
     y: number,
-    angle: number
+    angle: number,
+    owner = "unknown"
   ) {
-    super(world, x, y, "bullet", undefined, {
+    super(world, x, y, "mainSpritesheet", "bullet.png", {
       angle: Phaser.Math.DegToRad(angle),
       friction: 0,
       frictionAir: 0,
       mass: 5,
       label: "bullet",
     });
+    this.owner = owner;
     this.speed = 2;
     this.scene = scene;
 
@@ -28,22 +32,22 @@ export class Bullet extends Phaser.Physics.Matter.Sprite {
 
     this.scene.matterCollision.addOnCollideActive({
       objectA: this,
-      callback: ({ bodyA }) => {
-        // @ts-ignore
-        bodyA?.gameObject?.destroy();
+      callback: () => {
+        this.explode();
       },
     });
 
     this.timeout = setTimeout(() => {
       this.explode();
     }, 2000);
-
-    // this.setOnCollide(() => {
-    //   this.explode();
-    // });
   }
 
   explode() {
+    if (!this.active) {
+      return;
+    }
+    const explosion = new Explosion(this.scene, this.x, this.y);
+    this.scene.add.existing(explosion);
     this.destroy();
     clearTimeout(this.timeout);
   }

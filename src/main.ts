@@ -2,6 +2,8 @@ import Phaser from "phaser";
 import PhaserMatterCollisionPlugin from "phaser-matter-collision-plugin";
 
 import { GameScene } from "./scenes/Game";
+import { GameUI } from "./scenes/GameUI";
+import { GameOver } from "./scenes/GameOver";
 
 const pluginConfig = {
   // The plugin class:
@@ -39,7 +41,7 @@ const config: Phaser.Types.Core.GameConfig = {
   plugins: {
     scene: [pluginConfig],
   },
-  scene: [GameScene],
+  scene: [GameScene, GameUI, GameOver],
 };
 
 export default new Phaser.Game(config);

@@ -20,7 +20,9 @@ export default class Tank extends Phaser.Physics.Matter.Sprite {
     x: number,
     y: number
   ) {
-    super(world, x, y, "tank", "tankBody_blue_outline");
+    super(world, x, y, "mainSpritesheet", "tank-yellow-1.png", {
+      mass: 100,
+    });
     this.scene = scene;
     this.scene.add.existing(this);
     // this.scene.matter.add.gameObject(this);
@@ -64,11 +66,12 @@ export default class Tank extends Phaser.Physics.Matter.Sprite {
     }
 
     if (this.inputs.fire.isDown) {
+      this.anims.play("tankMove");
       if (this.bullet?.active) {
         return;
       }
       const fireOffset = new Phaser.Math.Vector2()
-        .setToPolar(this.rotation - 90, 30)
+        .setToPolar(this.rotation - 90, 15)
         .rotate(Phaser.Math.PI2 / 3);
       this.bullet = new Bullet(
         this.scene,

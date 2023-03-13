@@ -1,0 +1,255 @@
+{
+	"frames": {
+		"base.png": {
+			"frame": {
+				"x": 1,
+				"y": 1,
+				"w": 16,
+				"h": 16
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 16,
+				"h": 16
+			},
+			"sourceSize": {
+				"w": 16,
+				"h": 16
+			}
+		},
+		"base-die.png": {
+			"frame": {
+				"x": 19,
+				"y": 1,
+				"w": 16,
+				"h": 16
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 16,
+				"h": 16
+			},
+			"sourceSize": {
+				"w": 16,
+				"h": 16
+			}
+		},
+		"bullet.png": {
+			"frame": {
+				"x": 37,
+				"y": 1,
+				"w": 4,
+				"h": 3
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 4,
+				"h": 3
+			},
+			"sourceSize": {
+				"w": 4,
+				"h": 3
+			}
+		},
+		"explosion-1.png": {
+			"frame": {
+				"x": 37,
+				"y": 6,
+				"w": 16,
+				"h": 15
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 16,
+				"h": 15
+			},
+			"sourceSize": {
+				"w": 16,
+				"h": 15
+			}
+		},
+		"explosion-2.png": {
+			"frame": {
+				"x": 1,
+				"y": 23,
+				"w": 16,
+				"h": 15
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 16,
+				"h": 15
+			},
+			"sourceSize": {
+				"w": 16,
+				"h": 15
+			}
+		},
+		"explosion-3.png": {
+			"frame": {
+				"x": 19,
+				"y": 23,
+				"w": 16,
+				"h": 16
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 16,
+				"h": 16
+			},
+			"sourceSize": {
+				"w": 16,
+				"h": 16
+			}
+		},
+		"flash-1.png": {
+			"frame": {
+				"x": 37,
+				"y": 23,
+				"w": 13,
+				"h": 13
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 13,
+				"h": 13
+			},
+			"sourceSize": {
+				"w": 13,
+				"h": 13
+			}
+		},
+		"flash-2.png": {
+			"frame": {
+				"x": 37,
+				"y": 38,
+				"w": 13,
+				"h": 13
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 13,
+				"h": 13
+			},
+			"sourceSize": {
+				"w": 13,
+				"h": 13
+			}
+		},
+		"flash-3.png": {
+			"frame": {
+				"x": 55,
+				"y": 1,
+				"w": 13,
+				"h": 13
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 13,
+				"h": 13
+			},
+			"sourceSize": {
+				"w": 13,
+				"h": 13
+			}
+		},
+		"flash-4.png": {
+			"frame": {
+				"x": 55,
+				"y": 16,
+				"w": 15,
+				"h": 15
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 15,
+				"h": 15
+			},
+			"sourceSize": {
+				"w": 15,
+				"h": 15
+			}
+		},
+		"tank-yellow-1.png": {
+			"frame": {
+				"x": 52,
+				"y": 33,
+				"w": 13,
+				"h": 13
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 13,
+				"h": 13
+			},
+			"sourceSize": {
+				"w": 13,
+				"h": 13
+			}
+		},
+		"tank-yellow-2.png": {
+			"frame": {
+				"x": 1,
+				"y": 48,
+				"w": 13,
+				"h": 13
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 13,
+				"h": 13
+			},
+			"sourceSize": {
+				"w": 13,
+				"h": 13
+			}
+		}
+	},
+	"meta": {
+		"app": "http://www.codeandweb.com/texturepacker",
+		"version": "1.0",
+		"image": "spritesheet.png",
+		"format": "RGBA8888",
+		"size": {
+			"w": 71,
+			"h": 62
+		},
+		"scale": "1"
+	}
+}

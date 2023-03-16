@@ -1,5 +1,6 @@
 import { GameScene } from "../scenes/Game";
 import { Bullet, BulletGroup } from "./Bullet";
+import Explosion from "./Explosion";
 
 export type TInputs = {
   up: Phaser.Input.Keyboard.Key;
@@ -16,7 +17,7 @@ export default class Tank extends Phaser.Physics.Arcade.Sprite {
   bulletGroup: BulletGroup;
   fired: boolean;
   constructor(
-    scene: Phaser.Scene,
+    scene: GameScene,
     x: number,
     y: number,
     bulletGroup: BulletGroup
@@ -98,5 +99,12 @@ export default class Tank extends Phaser.Physics.Arcade.Sprite {
       },
       "player"
     );
+  }
+
+  die() {
+    const explosion = new Explosion(this.scene, this.x, this.y);
+    this.scene.add.existing(explosion);
+    this.setActive(false);
+    this.setVisible(false);
   }
 }

@@ -17,8 +17,11 @@ export class GameScene extends Scene {
   enemies: Enemy[] = [];
   enemySpawnInterval!: number;
   bullets!: BulletGroup;
+  playerLifes: number;
+  player!: Tank;
   constructor() {
     super("GameScene");
+    this.playerLifes = 3;
   }
   preload() {
     this.load.atlas(
@@ -44,7 +47,7 @@ export class GameScene extends Scene {
     this.scene.launch("GameUI");
     this.bullets = new BulletGroup(this);
 
-    const player = new Tank(this, 100, 100, this.bullets);
+    this.player = new Tank(this, 100, 100, this.bullets);
     const base = this.physics.add.sprite(
       230,
       500,
@@ -60,14 +63,14 @@ export class GameScene extends Scene {
 
     const enemySpawn = map.getObjectLayer("EnemySpawn");
     this.enemySpawnInterval = setInterval(() => {
-      this.spawnEnemy(enemySpawn, player);
+      this.spawnEnemy(enemySpawn, this.player);
     }, 3000);
 
-    this.physics.add.collider(this.walls, player);
+    this.physics.add.collider(this.walls, this.player);
     this.physics.add.collider(
       this.bullets,
-      player,
-      this.playerWithBulletCollideHandler
+      this.player,
+      this.playerWithBulletCollideHandler.bind(this)
     );
     this.physics.add.collider(
       base,
@@ -81,7 +84,7 @@ export class GameScene extends Scene {
     );
     this.physics.add.collider(
       this.walls,
-      player.bulletGroup,
+      this.player.bulletGroup,
       this.tileCollideHandler.bind(this)
     );
   }
@@ -112,6 +115,17 @@ export class GameScene extends Scene {
     objB: Phaser.GameObjects.GameObject
   ) {
     objB.destroy();
+
+    this.player.die();
+    this.playerLifes -= 1;
+
+    if (this.playerLifes <= 0) {
+      this.gameOver();
+    }
+
+    this.player.setPosition(100, 100);
+    this.player.setActive(true);
+    this.player.setVisible(true);
   }
 
   enemyWithPlayerBulletCollideHandler(
@@ -172,6 +186,7 @@ export class GameScene extends Scene {
           this.enemyWithBulletCollideHandler
         );
         this.physics.add.collider(enemy, player);
+        this.physics.add.collider(enemy, this.enemies);
 
         this.enemies.push(enemy);
 

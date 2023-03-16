@@ -1,41 +1,17 @@
 import { GameScene } from "../scenes/Game";
 import Explosion from "./Explosion";
 
-export class Bullet extends Phaser.Physics.Matter.Sprite {
+export class Bullet extends Phaser.Physics.Arcade.Sprite {
   speed: number;
   timeout!: number;
   owner: string;
-  constructor(
-    scene: GameScene,
-    world: Phaser.Physics.Matter.World,
-    x: number,
-    y: number,
-    angle: number,
-    owner = "unknown"
-  ) {
-    super(world, x, y, "mainSpritesheet", "bullet.png", {
-      angle: Phaser.Math.DegToRad(angle),
-      friction: 0,
-      frictionAir: 0,
-      mass: 5,
-      label: "bullet",
-    });
-    this.owner = owner;
-    this.speed = 2;
+  constructor(scene: GameScene, x: number, y: number) {
+    super(scene, x, y, "mainSpritesheet", "bullet.png");
+    this.speed = 200;
     this.scene = scene;
+    this.owner = "unknown";
 
-    const initialVelocity = new Phaser.Math.Vector2(0, 0);
-    this.setVelocity(initialVelocity.x, initialVelocity.y);
-
-    this.thrustRight(0.08 * this.speed);
     this.scene.add.existing(this);
-
-    this.scene.matterCollision.addOnCollideActive({
-      objectA: this,
-      callback: () => {
-        this.explode();
-      },
-    });
 
     this.timeout = setTimeout(() => {
       this.explode();
@@ -52,11 +28,53 @@ export class Bullet extends Phaser.Physics.Matter.Sprite {
     clearTimeout(this.timeout);
   }
 
-  fire() {
-    this.thrustRight(0.08 * this.speed);
+  shoot(x: number, y: number, angle: number, owner?: string): void {
+    this.body.reset(x, y);
+    this.owner = owner || this.owner;
+    this.angle = Phaser.Math.DegToRad(angle);
+    this.setActive(true);
+    this.setVisible(true);
+    this.setBounce(1, 1);
+    this.scene.physics.velocityFromRotation(
+      this.angle,
+      this.speed,
+      this.body.velocity
+    );
+    setTimeout(() => {
+      this.destroy(true);
+    }, 5000);
+  }
+}
 
-    this.timeout = setTimeout(() => {
-      this.explode();
-    }, 2000);
+export class BulletGroup extends Phaser.Physics.Arcade.Group {
+  hasActiveChild: boolean;
+  constructor(scene: Phaser.Scene) {
+    super(scene.physics.world, scene);
+    this.createMultiple({
+      classType: Bullet,
+      key: "bullet",
+      active: false,
+      visible: false,
+    });
+    this.maxSize = 5;
+
+    this.hasActiveChild = false;
+  }
+  shoot(
+    x: number,
+    y: number,
+    angle: number,
+    onDestroy?: () => void,
+    owner?: string
+  ) {
+    const bullet = this.get(x, y, "bullet") as Bullet;
+    if (bullet) {
+      this.hasActiveChild = true;
+      bullet.shoot(x, y, angle, owner);
+      bullet.once("destroy", () => {
+        this.hasActiveChild = false;
+        onDestroy?.();
+      });
+    }
   }
 }

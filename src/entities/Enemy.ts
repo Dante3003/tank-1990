@@ -35,27 +35,6 @@ export default class Enemy extends Phaser.Physics.Arcade.Sprite {
       this.fire();
     }, 1000 * randomInRange(1.2, 3.5));
 
-    // this.scene.matterCollision.addOnCollideStart({
-    //   objectA: this,
-    //   callback: ({ bodyB, gameObjectB }) => {
-    //     // @ts-ignore
-    //     if (bodyB.label === "bullet" && gameObjectB?.owner !== "enemy") {
-    //       const explosion = new Explosion(
-    //         scene,
-    //         // @ts-ignore
-    //         this.x,
-    //         // @ts-ignore
-    //         this.y,
-    //         2
-    //       );
-    //       scene.add.existing(explosion);
-    //       // @ts-ignore
-    //       bodyB?.gameObject?.destroy();
-    //       this.die();
-    //     }
-    //   },
-    // });
-
     this.once("destroy", () => {
       clearInterval(this.moveInterval);
       clearInterval(this.fireInterval);
@@ -99,7 +78,7 @@ export default class Enemy extends Phaser.Physics.Arcade.Sprite {
     if (!this.fired) {
       this.fired = true;
       const fireOffset = new Phaser.Math.Vector2()
-        .setToPolar(this.rotation - 90, 30)
+        .setToPolar(this.rotation - 90, this.width)
         .rotate(Phaser.Math.PI2 / 3);
       this.bulletGroup.shoot(
         this.x + fireOffset.x,

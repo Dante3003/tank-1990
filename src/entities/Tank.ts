@@ -87,7 +87,7 @@ export default class Tank extends Phaser.Physics.Arcade.Sprite {
   fire() {
     this.anims.play("tankMove");
     const fireOffset = new Phaser.Math.Vector2()
-      .setToPolar(this.rotation - 90, 15)
+      .setToPolar(this.rotation - 90, this.width)
       .rotate(Phaser.Math.PI2 / 3);
     this.bulletGroup.shoot(
       this.x + fireOffset.x,

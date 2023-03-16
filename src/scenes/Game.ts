@@ -171,6 +171,9 @@ export class GameScene extends Scene {
           this.bullets,
           this.enemyWithBulletCollideHandler
         );
+        this.physics.add.collider(enemy, player);
+
+        this.enemies.push(enemy);
 
         enemy.once("destroy", () => {
           this.enemies = this.enemies.filter((e) => e !== enemy);

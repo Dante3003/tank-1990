@@ -19,7 +19,7 @@ export default class Enemy extends Phaser.Physics.Arcade.Sprite {
     y: number,
     bulletGroup: BulletGroup
   ) {
-    super(scene, x, y, "mainSpritesheet", "tank-yellow-1.png");
+    super(scene, x, y, "mainSpritesheet", "tank_basic-1.png");
     this.scene = scene;
     this.bulletGroup = bulletGroup;
     this.scene.add.existing(this);

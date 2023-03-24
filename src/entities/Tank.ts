@@ -22,7 +22,7 @@ export default class Tank extends Phaser.Physics.Arcade.Sprite {
     y: number,
     bulletGroup: BulletGroup
   ) {
-    super(scene, x, y, "mainSpritesheet", "tank-yellow-1.png");
+    super(scene, x, y, "mainSpritesheet", "tank_basic-1.png");
     this.scene = scene;
 
     this.scene.add.existing(this);
@@ -30,7 +30,7 @@ export default class Tank extends Phaser.Physics.Arcade.Sprite {
 
     this.speed = 90;
     this.fired = false;
-    this.bulletGroup = new BulletGroup(this.scene);
+    this.bulletGroup = new BulletGroup(scene);
 
     this.inputs = {
       up: this.scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.W),
@@ -50,6 +50,7 @@ export default class Tank extends Phaser.Physics.Arcade.Sprite {
         this.speed,
         this.body.velocity as Phaser.Math.Vector2
       );
+      this.anims.play("tankMove");
     } else if (this.inputs.left.isDown) {
       this.angle = -180;
       this.scene.physics.velocityFromRotation(
@@ -57,6 +58,7 @@ export default class Tank extends Phaser.Physics.Arcade.Sprite {
         this.speed,
         this.body.velocity as Phaser.Math.Vector2
       );
+      this.anims.play("tankMove");
     } else if (this.inputs.up.isDown) {
       this.angle = -90;
       this.scene.physics.velocityFromRotation(
@@ -64,6 +66,7 @@ export default class Tank extends Phaser.Physics.Arcade.Sprite {
         this.speed,
         this.body.velocity as Phaser.Math.Vector2
       );
+      this.anims.play("tankMove");
     } else if (this.inputs.down.isDown) {
       this.angle = 90;
       this.scene.physics.velocityFromRotation(
@@ -71,6 +74,7 @@ export default class Tank extends Phaser.Physics.Arcade.Sprite {
         this.speed,
         this.body.velocity as Phaser.Math.Vector2
       );
+      this.anims.play("tankMove");
     } else {
       this.scene.physics.velocityFromRotation(
         this.rotation,
@@ -86,7 +90,6 @@ export default class Tank extends Phaser.Physics.Arcade.Sprite {
   }
 
   fire() {
-    this.anims.play("tankMove");
     const fireOffset = new Phaser.Math.Vector2()
       .setToPolar(this.rotation - 90, this.width)
       .rotate(Phaser.Math.PI2 / 3);

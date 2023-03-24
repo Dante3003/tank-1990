@@ -97,7 +97,7 @@ export class GameScene extends Scene {
   ) {
     const explosion = new Explosion(
       this,
-      objA.body.position.x,
+      objA.body?.position?.x,
       objA.body.position.y
     );
     this.add.existing(explosion);
@@ -164,6 +164,8 @@ export class GameScene extends Scene {
     gameEvents.emit("gameOver");
   }
   spawnEnemy(enemySpawn: Phaser.Tilemaps.ObjectLayer, player: Tank) {
+    console.log(this.enemies);
+
     if (this.enemies.length >= 4) {
       return;
     }

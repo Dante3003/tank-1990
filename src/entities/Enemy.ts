@@ -78,7 +78,7 @@ export default class Enemy extends Phaser.Physics.Arcade.Sprite {
     if (!this.fired) {
       this.fired = true;
       const fireOffset = new Phaser.Math.Vector2()
-        .setToPolar(this.rotation - 90, this.width)
+        .setToPolar(this.rotation - 90, this.width / 2)
         .rotate(Phaser.Math.PI2 / 3);
       this.bulletGroup.shoot(
         this.x + fireOffset.x,

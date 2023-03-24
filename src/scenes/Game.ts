@@ -47,7 +47,7 @@ export class GameScene extends Scene {
     this.scene.launch("GameUI");
     this.bullets = new BulletGroup(this);
 
-    this.player = new Tank(this, 100, 100, this.bullets);
+    this.player = new Tank(this, 100, 100);
     const base = this.physics.add.sprite(
       230,
       500,
@@ -114,6 +114,8 @@ export class GameScene extends Scene {
     objA: Phaser.GameObjects.GameObject,
     objB: Phaser.GameObjects.GameObject
   ) {
+    console.log(objA);
+
     objB.destroy();
 
     this.player.die();
@@ -143,6 +145,8 @@ export class GameScene extends Scene {
     objA: Phaser.GameObjects.GameObject,
     objB: Phaser.GameObjects.GameObject
   ) {
+    console.log(objA);
+
     objB.destroy();
   }
 

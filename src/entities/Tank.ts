@@ -16,12 +16,7 @@ export default class Tank extends Phaser.Physics.Arcade.Sprite {
   bullet: Bullet | undefined;
   bulletGroup: BulletGroup;
   fired: boolean;
-  constructor(
-    scene: GameScene,
-    x: number,
-    y: number,
-    bulletGroup: BulletGroup
-  ) {
+  constructor(scene: GameScene, x: number, y: number) {
     super(scene, x, y, "mainSpritesheet", "tank_basic-1.png");
     this.scene = scene;
 

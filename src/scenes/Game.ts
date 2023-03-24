@@ -1,4 +1,3 @@
-import { CollidingObject, EventData } from "phaser-matter-collision-plugin";
 import {
   createExplosionAnimation,
   createFlashAnimation,
@@ -11,13 +10,18 @@ import { Scene } from "phaser";
 import { randomInRange } from "../utils/random";
 import gameEvents from "../events/game";
 import Flash from "../entities/Flash";
+import { Bullet, BulletGroup } from "../entities/Bullet";
 
 export class GameScene extends Scene {
   walls!: Phaser.Tilemaps.TilemapLayer;
   enemies: Enemy[] = [];
   enemySpawnInterval!: number;
+  bullets!: BulletGroup;
+  playerLifes: number;
+  player!: Tank;
   constructor() {
     super("GameScene");
+    this.playerLifes = 3;
   }
   preload() {
     this.load.atlas(
@@ -41,18 +45,14 @@ export class GameScene extends Scene {
     createFlashAnimation(this.anims);
 
     this.scene.launch("GameUI");
-    this.matter.world.setBounds();
+    this.bullets = new BulletGroup(this);
 
-    // player
-    new Tank(this, this.matter.world, 100, 100);
-    const base = this.matter.add.sprite(
+    this.player = new Tank(this, 100, 100, this.bullets);
+    const base = this.physics.add.sprite(
       230,
       500,
       "mainSpritesheet",
-      "base.png",
-      {
-        isStatic: true,
-      }
+      "base.png"
     );
 
     const map = this.make.tilemap({ key: "demoMap" });
@@ -60,78 +60,97 @@ export class GameScene extends Scene {
 
     this.walls = map.createLayer("Walls", tileset);
     map.setCollisionByProperty({ collider: true });
-    this.matter.world.convertTilemapLayer(this.walls);
-
-    this.walls.forEachTile((tile) => {
-      this.matterCollision.addOnCollideStart({
-        objectA: tile,
-        callback: this.tileCollideHandler.bind(this),
-      });
-    });
 
     const enemySpawn = map.getObjectLayer("EnemySpawn");
     this.enemySpawnInterval = setInterval(() => {
-      if (this.enemies.length >= 4) {
-        return;
-      }
-      const randomIndex = randomInRange(0, enemySpawn.objects.length);
-      const randomPoint = enemySpawn.objects[randomIndex];
-      new Flash(this, randomPoint.x || 0, randomPoint.y || 0).once(
-        "destroy",
-        () => {
-          const enemy = new Enemy(
-            this,
-            this.matter.world,
-            randomPoint.x || 0,
-            randomPoint.y || 0
-          );
-          enemy.once("destroy", () => {
-            this.enemies = this.enemies.filter((e) => e !== enemy);
-          });
-        }
-      );
+      this.spawnEnemy(enemySpawn, this.player);
     }, 3000);
 
-    this.matterCollision.addOnCollideStart({
-      objectA: base,
-      callback: this.baseCollideHandler.bind(this),
-    });
+    this.physics.add.collider(this.walls, this.player);
+    this.physics.add.collider(
+      this.bullets,
+      this.player,
+      this.playerWithBulletCollideHandler.bind(this)
+    );
+    this.physics.add.collider(
+      base,
+      this.bullets,
+      this.baseCollideHandler.bind(this)
+    );
+    this.physics.add.collider(
+      this.walls,
+      this.bullets,
+      this.tileCollideHandler.bind(this)
+    );
+    this.physics.add.collider(
+      this.walls,
+      this.player.bulletGroup,
+      this.tileCollideHandler.bind(this)
+    );
   }
-  update() {}
-  tileCollideHandler({
-    bodyA,
-    bodyB,
-  }: EventData<CollidingObject, CollidingObject>) {
-    if (
-      // @ts-ignore
-      bodyB.label === "bullet" &&
-      // @ts-ignore
-      bodyA?.gameObject?.tile?.properties?.destroyable
-    ) {
-      // @ts-ignore
-      this.walls.removeTileAtWorldXY(bodyA.position.x, bodyA.position.y);
-      // @ts-ignore
-      bodyA?.gameObject?.destroy();
 
-      const explosion = new Explosion(
-        this,
-        // @ts-ignore
-        bodyB.position.x,
-        // @ts-ignore
-        bodyB.position.y
-      );
-      this.add.existing(explosion);
+  update() {}
+
+  tileCollideHandler(
+    objA: Phaser.GameObjects.GameObject,
+    objB: Phaser.GameObjects.GameObject
+  ) {
+    const explosion = new Explosion(
+      this,
+      objA.body.position.x,
+      objA.body.position.y
+    );
+    this.add.existing(explosion);
+    objA.destroy();
+
+    // @ts-ignore
+    if (objB?.properties?.destroyable) {
       // @ts-ignore
-      bodyB?.gameObject?.destroy();
+      this.walls.removeTileAtWorldXY(objB.pixelX, objB.pixelY);
     }
   }
-  baseCollideHandler({
-    gameObjectA,
-  }: EventData<CollidingObject, CollidingObject>) {
+
+  playerWithBulletCollideHandler(
+    objA: Phaser.GameObjects.GameObject,
+    objB: Phaser.GameObjects.GameObject
+  ) {
+    objB.destroy();
+
+    this.player.die();
+    this.playerLifes -= 1;
+
+    if (this.playerLifes <= 0) {
+      this.gameOver();
+    }
+
+    this.player.setPosition(100, 100);
+    this.player.setActive(true);
+    this.player.setVisible(true);
+  }
+
+  enemyWithPlayerBulletCollideHandler(
+    objA: Phaser.GameObjects.GameObject,
+    objB: Phaser.GameObjects.GameObject
+  ) {
+    const enemy = objA as Enemy;
+    const bullet = objB as Bullet;
+    console.log(bullet);
+    bullet.destroy();
+    enemy.die();
+  }
+
+  enemyWithBulletCollideHandler(
+    objA: Phaser.GameObjects.GameObject,
+    objB: Phaser.GameObjects.GameObject
+  ) {
+    objB.destroy();
+  }
+
+  baseCollideHandler() {
     // @ts-ignore
-    gameObjectA.setFrame("base-die.png");
     this.gameOver();
   }
+
   gameOver() {
     clearInterval(this.enemySpawnInterval);
     this.enemies.forEach((item) => {
@@ -140,5 +159,41 @@ export class GameScene extends Scene {
     this.scene.pause("GameScene");
     gameEvents.emit("gameOver");
   }
-  spawnEnemy() {}
+  spawnEnemy(enemySpawn: Phaser.Tilemaps.ObjectLayer, player: Tank) {
+    if (this.enemies.length >= 4) {
+      return;
+    }
+    const randomIndex = randomInRange(0, enemySpawn.objects.length);
+    const randomPoint = enemySpawn.objects[randomIndex];
+    new Flash(this, randomPoint.x || 0, randomPoint.y || 0).once(
+      "destroy",
+      () => {
+        const enemy = new Enemy(
+          this,
+          randomPoint.x || 0,
+          randomPoint.y || 0,
+          this.bullets
+        );
+        this.physics.add.collider(enemy, this.walls);
+        this.physics.add.collider(
+          enemy,
+          player.bulletGroup,
+          this.enemyWithPlayerBulletCollideHandler
+        );
+        this.physics.add.collider(
+          enemy,
+          this.bullets,
+          this.enemyWithBulletCollideHandler
+        );
+        this.physics.add.collider(enemy, player);
+        this.physics.add.collider(enemy, this.enemies);
+
+        this.enemies.push(enemy);
+
+        enemy.once("destroy", () => {
+          this.enemies = this.enemies.filter((e) => e !== enemy);
+        });
+      }
+    );
+  }
 }

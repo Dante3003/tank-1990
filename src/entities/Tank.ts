@@ -1,5 +1,6 @@
 import { GameScene } from "../scenes/Game";
-import { Bullet } from "./Bullet";
+import { Bullet, BulletGroup } from "./Bullet";
+import Explosion from "./Explosion";
 
 export type TInputs = {
   up: Phaser.Input.Keyboard.Key;
@@ -9,29 +10,27 @@ export type TInputs = {
   fire: Phaser.Input.Keyboard.Key;
 };
 
-export default class Tank extends Phaser.Physics.Matter.Sprite {
-  scene: GameScene;
+export default class Tank extends Phaser.Physics.Arcade.Sprite {
   inputs: TInputs;
   speed: number;
   bullet: Bullet | undefined;
+  bulletGroup: BulletGroup;
+  fired: boolean;
   constructor(
     scene: GameScene,
-    world: Phaser.Physics.Matter.World,
     x: number,
-    y: number
+    y: number,
+    bulletGroup: BulletGroup
   ) {
-    super(world, x, y, "mainSpritesheet", "tank-yellow-1.png", {
-      mass: 100,
-    });
+    super(scene, x, y, "mainSpritesheet", "tank_basic-1.png");
     this.scene = scene;
-    this.scene.add.existing(this);
-    // this.scene.matter.add.gameObject(this);
-    this.speed = 0.8;
 
-    // TODO: remove this lines
-    this.setDisplaySize(32, 32);
-    this.setSize(32, 32);
-    // this.rotation = -Math.PI / 2;
+    this.scene.add.existing(this);
+    this.scene.physics.add.existing(this);
+
+    this.speed = 90;
+    this.fired = false;
+    this.bulletGroup = new BulletGroup(scene);
 
     this.inputs = {
       up: this.scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.W),
@@ -42,47 +41,73 @@ export default class Tank extends Phaser.Physics.Matter.Sprite {
         Phaser.Input.Keyboard.KeyCodes.SPACE
       ),
     };
-
-    // this.scene.matterCollision.addOnCollideStart({
-    //   objectA: this,
-    //   callback: ({ gameObjectB }) => {
-    //     console.log("worked");
-    //   },
-    // });
   }
-  protected preUpdate(): void {
+  preUpdate(): void {
     if (this.inputs.right.isDown) {
-      this.x += this.speed;
       this.angle = 0;
-    } else if (this.inputs.left.isDown) {
-      this.x -= this.speed;
-      this.angle = -180;
-    } else if (this.inputs.up.isDown) {
-      this.y -= this.speed;
-      this.angle = -90;
-    } else if (this.inputs.down.isDown) {
-      this.y += this.speed;
-      this.angle = 90;
-    }
-
-    if (this.inputs.fire.isDown) {
-      this.anims.play("tankMove");
-      if (this.bullet?.active) {
-        return;
-      }
-      const fireOffset = new Phaser.Math.Vector2()
-        .setToPolar(this.rotation - 90, 15)
-        .rotate(Phaser.Math.PI2 / 3);
-      this.bullet = new Bullet(
-        this.scene,
-        this.scene.matter.world,
-        this.x + fireOffset.x,
-        this.y + fireOffset.y,
-        this.angle - 90
+      this.scene.physics.velocityFromRotation(
+        this.rotation,
+        this.speed,
+        this.body.velocity as Phaser.Math.Vector2
       );
-      this.scene.add.existing(this.bullet);
-
-      // this.bulletGroup.get();
+      this.anims.play("tankMove");
+    } else if (this.inputs.left.isDown) {
+      this.angle = -180;
+      this.scene.physics.velocityFromRotation(
+        this.rotation,
+        this.speed,
+        this.body.velocity as Phaser.Math.Vector2
+      );
+      this.anims.play("tankMove");
+    } else if (this.inputs.up.isDown) {
+      this.angle = -90;
+      this.scene.physics.velocityFromRotation(
+        this.rotation,
+        this.speed,
+        this.body.velocity as Phaser.Math.Vector2
+      );
+      this.anims.play("tankMove");
+    } else if (this.inputs.down.isDown) {
+      this.angle = 90;
+      this.scene.physics.velocityFromRotation(
+        this.rotation,
+        this.speed,
+        this.body.velocity as Phaser.Math.Vector2
+      );
+      this.anims.play("tankMove");
+    } else {
+      this.scene.physics.velocityFromRotation(
+        this.rotation,
+        0,
+        this.body.velocity as Phaser.Math.Vector2
+      );
     }
+
+    if (this.inputs.fire.isDown && !this.fired) {
+      this.fire();
+      this.fired = true;
+    }
+  }
+
+  fire() {
+    const fireOffset = new Phaser.Math.Vector2()
+      .setToPolar(this.rotation - 90, this.width)
+      .rotate(Phaser.Math.PI2 / 3);
+    this.bulletGroup.shoot(
+      this.x + fireOffset.x,
+      this.y + fireOffset.y,
+      this.angle,
+      () => {
+        this.fired = false;
+      },
+      "player"
+    );
+  }
+
+  die() {
+    const explosion = new Explosion(this.scene, this.x, this.y);
+    this.scene.add.existing(explosion);
+    this.setActive(false);
+    this.setVisible(false);
   }
 }

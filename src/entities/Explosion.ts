@@ -1,10 +1,8 @@
-export default class Explosion extends Phaser.Physics.Matter.Sprite {
+export default class Explosion extends Phaser.Physics.Arcade.Sprite {
   emitter: any;
   constructor(scene: Phaser.Scene, x: number, y: number, scale = 1) {
-    super(scene.matter.world, x, y, "mainSpritesheet", "explosion-1.png", {
-      isSensor: true,
-      isStatic: true,
-    });
+    super(scene, x, y, "mainSpritesheet", "explosion-1.png");
+    // this.scene.add.existing(this);
     this.setScale(scale);
 
     // this.emitter = this.scene.explosionParticles.createEmitter({

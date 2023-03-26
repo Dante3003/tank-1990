@@ -97,6 +97,16 @@ export class GameScene extends Scene {
       this.tileCollideHandler.bind(this)
     );
     this.physics.add.collider(
+      this.bullets,
+      this.bullets,
+      this.bulletsTogetherCollideHandler.bind(this)
+    );
+    this.physics.add.collider(
+      this.bullets,
+      this.player.bulletGroup,
+      this.bulletsTogetherCollideHandler.bind(this)
+    );
+    this.physics.add.collider(
       this.walls,
       this.player.bulletGroup,
       this.tileCollideHandler.bind(this)
@@ -150,7 +160,6 @@ export class GameScene extends Scene {
   ) {
     const enemy = objA as Enemy;
     const bullet = objB as Bullet;
-    console.log(bullet);
     bullet.destroy();
     enemy.die();
   }
@@ -176,6 +185,13 @@ export class GameScene extends Scene {
     });
     this.scene.pause("GameScene");
     gameEvents.emit("gameOver");
+  }
+  bulletsTogetherCollideHandler(
+    objA: Phaser.GameObjects.GameObject,
+    objB: Phaser.GameObjects.GameObject
+  ) {
+    objA.destroy();
+    objB.destroy();
   }
   spawnEnemy(enemySpawn: Phaser.Tilemaps.ObjectLayer, player: Tank) {
     console.log(this.enemies);

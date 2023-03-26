@@ -3,10 +3,24 @@
         "height": 4300,
         "width": 2
     },
-    "activeFile": "",
+    "activeFile": "level-1.tmx",
     "expandedProjectPaths": [
     ],
     "fileStates": {
+        "": {
+            "scaleInEditor": 1
+        },
+        "level-1.tmx": {
+            "scale": 0.94,
+            "selectedLayer": 2,
+            "viewCenter": {
+                "x": 63.29787234042553,
+                "y": 282.97872340425533
+            }
+        },
+        "level-1.tmx#demo": {
+            "scaleInDock": 1
+        }
     },
     "last.exportedFilePath": "/private/var/www/projects/tank-1990/public/assets/levels",
     "last.imagePath": "/private/var/www/projects/tank-1990/public/assets/sprites",
@@ -17,10 +31,12 @@
     "map.tileWidth": 8,
     "map.width": 110,
     "openFiles": [
+        "level-1.tmx"
     ],
     "project": "level-1.tiled-project",
     "property.type": "bool",
     "recentFiles": [
+        "level-1.tmx"
     ],
     "tileset.embedInMap": true,
     "tileset.tileSize": {

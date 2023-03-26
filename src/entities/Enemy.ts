@@ -91,7 +91,7 @@ export default class Enemy extends Phaser.Physics.Arcade.Sprite {
     }
   }
   public die() {
-    gameEvents.emit("updateScore", 500);
+    gameEvents.emit("updateScore", 100);
     clearInterval(this.moveInterval);
     clearInterval(this.fireInterval);
     const explosion = new Explosion(this.scene, this.x, this.y);

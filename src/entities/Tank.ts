@@ -13,7 +13,6 @@ export type TInputs = {
 export default class Tank extends Phaser.Physics.Arcade.Sprite {
   inputs: TInputs;
   speed: number;
-  bullet: Bullet | undefined;
   bulletGroup: BulletGroup;
   fired: boolean;
   constructor(scene: GameScene, x: number, y: number) {

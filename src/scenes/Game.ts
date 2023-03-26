@@ -19,20 +19,22 @@ export class GameScene extends Scene {
   bullets!: BulletGroup;
   playerLifes: number;
   player!: Tank;
+  playerSpawnPoint: {
+    x: number;
+    y: number;
+  };
   constructor() {
     super("GameScene");
     this.playerLifes = 3;
+    this.playerSpawnPoint = {
+      x: 0,
+      y: 0,
+    };
   }
   preload() {
-    this.load.atlas(
-      "tank",
-      "assets/sprites/tank.png",
-      "assets/sprites/tank.json"
-    );
-    this.load.image("bullet", "assets/sprites/bullet.png");
-    this.load.image("demoTextures", "assets/sprites/demo.png");
+    this.load.image("baseTileset", "assets/sprites/base-textures.png");
 
-    this.load.tilemapTiledJSON("demoMap", "assets/levels/test-level.json");
+    this.load.tilemapTiledJSON("levelFirst", "assets/levels/test-level.json");
     this.load.atlas(
       "mainSpritesheet",
       "assets/sprites/spritesheet.png",
@@ -47,19 +49,31 @@ export class GameScene extends Scene {
     this.scene.launch("GameUI");
     this.bullets = new BulletGroup(this);
 
-    this.player = new Tank(this, 100, 100);
-    const base = this.physics.add.sprite(
-      230,
-      500,
-      "mainSpritesheet",
-      "base.png"
-    );
-
-    const map = this.make.tilemap({ key: "demoMap" });
-    const tileset = map.addTilesetImage("demo", "demoTextures");
+    const map = this.make.tilemap({ key: "levelFirst" });
+    const tileset = map.addTilesetImage("demo", "baseTileset");
 
     this.walls = map.createLayer("Walls", tileset);
     map.setCollisionByProperty({ collider: true });
+
+    const playerSpawn = map.getObjectLayer("PlayerSpawn");
+    this.playerSpawnPoint = {
+      x: playerSpawn.objects[0].x || this.playerSpawnPoint.x,
+      y: playerSpawn.objects[0].y || this.playerSpawnPoint.y,
+    };
+
+    this.player = new Tank(
+      this,
+      this.playerSpawnPoint.x,
+      this.playerSpawnPoint.y
+    );
+
+    const baseSpawn = map.getObjectLayer("BaseSpawn");
+    const base = this.physics.add.sprite(
+      baseSpawn.objects[0].x || 0,
+      baseSpawn.objects[0].y || 0,
+      "mainSpritesheet",
+      "base.png"
+    );
 
     const enemySpawn = map.getObjectLayer("EnemySpawn");
     this.enemySpawnInterval = setInterval(() => {
@@ -125,7 +139,7 @@ export class GameScene extends Scene {
       this.gameOver();
     }
 
-    this.player.setPosition(100, 100);
+    this.player.setPosition(this.playerSpawnPoint.x, this.playerSpawnPoint.y);
     this.player.setActive(true);
     this.player.setVisible(true);
   }
